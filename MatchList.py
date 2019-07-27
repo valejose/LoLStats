@@ -9,15 +9,18 @@ class MatchList:
     # startIndex:int
     # endIndex:int
 
-    def __init__(self, matchListData):
+    def __init__(self, data):
         matchReferenceList = []
-        for matchReference in matchListData['matches']:
+        for matchReference in data['matches']:
             matchReferenceList.append(MatchReference(matchReference))
 
         self.matches = matchReferenceList
-        self.totalGames = matchListData['totalGames']
-        self.startIndex = matchListData['startIndex']
-        self.endIndex = matchListData['endIndex']
+        self.totalGames = data['totalGames']
+        self.startIndex = data['startIndex']
+        self.endIndex = data['endIndex']
+
+    def getMostRecentMatchId(self):
+        return self.matches[0].gameId
 
     def getRolesList(self):
         rolesList = []

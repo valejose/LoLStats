@@ -7,6 +7,7 @@ from Summoner import Summoner
 from Mastery import Mastery
 from Champion import Champion
 from MatchList import MatchList
+from Match import Match
 
 # Takes in a failed API Query response status and prints it to the user
 def printError(status):
@@ -60,7 +61,7 @@ def requestSummonerDataByAccount(accountId, APIKey):
         return None
 
 # Makes a query to the Riot API for information about a specific summoners match history and returns it
-def requestMatchData(accountId, APIKey):
+def requestMatchHistoryData(accountId, APIKey):
     URL = "https://na1.api.riotgames.com/lol/match/v4/matchlists/by-account/" + accountId + "?api_key=" + APIKey
     response = requests.get(URL)
 
@@ -87,6 +88,16 @@ def requestMasteryDataForSingleChampionOfSummoner(summonerId, championId, APIKey
     else:
         printError(response.json()['status'])
         return None
+
+def requestMatchDataByMatchId(matchId, APIKey):
+    URL = "https://na1.api.riotgames.com/lol/match/v4/matches/" + str(matchId) + "?api_key=" + APIKey
+    response = requests.get(URL)
+    if response.status_code == requests.codes['ok']:
+        return response.json()
+    else:
+        printError(response.json()['status'])
+        return None
+
 
 def getCountChampionOccurencesInMatches(matchData):
     matches = matchData['matches']
@@ -135,20 +146,15 @@ def main():
     #     champ = getChampionByKey(champKey)
     #     print(champ.toString())
 
-    allMatchData = requestMatchData(mySummoner.accountId, APIKey)
+    allMatchData = requestMatchHistoryData(mySummoner.accountId, APIKey)
     if allMatchData != None:
         myAllMatchData = MatchList(allMatchData) 
-        rolesList = myAllMatchData.getRolesList()
-        lanesList = myAllMatchData.getLanesList()
-        # print(myAllMatchData.toString())
-        plt.figure(0)
-        makeHistogram(rolesList)
-        plt.figure(1)
-        makeHistogram(lanesList)
-        plt.show()
 
-    # matchData = requestMatchData(mySummoner.accountId, APIKey)
-    # championOccurences = getCountChampionOccurencesInMatches(matchData)  
+    mostRecentGame = myAllMatchData.getMostRecentMatchId()
+    print("Most recent Match Id is: " + str(mostRecentGame))
+    
+    myMatch = Match(requestMatchDataByMatchId(mostRecentGame, APIKey))
+    print(myMatch.toString())
 
     # print("Summoner's Name: " + mySummoner.name)
     # print("Summoner's Level: " + str(mySummoner.summonerLevel))

@@ -6,3 +6,6 @@ Ideas
 -get win rates of player being a specific champion against a specific champion
 
 -make graph showing spread of roles in match history
+
+-make list of all matchups in match history
+--ex. [(sona, lux), (yuumi, thresh), etc...]
