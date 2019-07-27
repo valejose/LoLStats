@@ -4,6 +4,7 @@ import requests
 
 from Summoner import Summoner
 from Mastery import Mastery
+from Champion import Champion
 
 # Takes in a failed API Query response status and prints it to the user
 def printError(status):
@@ -93,10 +94,11 @@ def getCountChampionOccurencesInMatches(matchData):
     
     return championsArr
 
-def getChampionNameByKey(champions, search_key):
-    for i in champions:
-        if i['key'] == search_key:
-            return i['name']
+def getChampionByKey(search_key):
+    champions = loadChampionsJson()
+    for champ in champions.values():
+        if str(champ['key']) == str(search_key):
+            return Champion(champ)
 
 def main():
     summonerName = "Cefiroth"
@@ -115,9 +117,12 @@ def main():
 
     allMasteryData = requestAllMasteryDataForSummoner(mySummoner.id, APIKey)
     if allMasteryData != None:
-        for masteryInfo in allMasteryData:
-            m = Mastery(masteryInfo)
-            print(m.toString())
+        # for masteryInfo in allMasteryData:
+        #     m = Mastery(masteryInfo)
+        #     print(m.toString())
+        champKey = allMasteryData[0]['championId']
+        champ = getChampionByKey(champKey)
+        print(champ.toString())
 
     # matchData = requestMatchData(mySummoner.accountId, APIKey)
     # championOccurences = getCountChampionOccurencesInMatches(matchData)  

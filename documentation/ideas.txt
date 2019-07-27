@@ -1,0 +1,6 @@
+Ideas
+-get win rate across all games in match history
+--get win rate accross games of a specific type
+--get win rate across games where player was a specific role
+
+-get win rates of player being a specific champion against a specific champion
