@@ -4,3 +4,5 @@ Ideas
 --get win rate across games where player was a specific role
 
 -get win rates of player being a specific champion against a specific champion
+
+-make graph showing spread of roles in match history

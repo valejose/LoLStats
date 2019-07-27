@@ -1,10 +1,12 @@
 import json
 import pprint
 import requests
+import matplotlib.pyplot as plt
 
 from Summoner import Summoner
 from Mastery import Mastery
 from Champion import Champion
+from MatchList import MatchList
 
 # Takes in a failed API Query response status and prints it to the user
 def printError(status):
@@ -36,10 +38,10 @@ def loadChampionsJson():
     return json_data['data']
 
 # Makes a query to the Riot API for information about a specific summoner and returns it
-# Returns: SummonerDTO
 def requestSummonerDataByName(summonerName, APIKey):
     URL = "https://na1.api.riotgames.com/lol/summoner/v4/summoners/by-name/" + summonerName + "?api_key=" + APIKey
     response = requests.get(URL)
+
     if response.status_code == requests.codes['ok']:
         return response.json()
     else:
@@ -47,10 +49,10 @@ def requestSummonerDataByName(summonerName, APIKey):
         return None
 
 # Makes a query to the Riot API for information about a specific summoner and returns it
-# Returns: SummonerDTO
 def requestSummonerDataByAccount(accountId, APIKey):
     URL = "https://na1.api.riotgames.com/lol/summoner/v4/summoners/by-account/" + accountId + "?api_key=" + APIKey
     response = requests.get(URL)
+
     if response.status_code == requests.codes['ok']:
         return response.json()
     else:
@@ -61,7 +63,12 @@ def requestSummonerDataByAccount(accountId, APIKey):
 def requestMatchData(accountId, APIKey):
     URL = "https://na1.api.riotgames.com/lol/match/v4/matchlists/by-account/" + accountId + "?api_key=" + APIKey
     response = requests.get(URL)
-    return response.json()
+
+    if response.status_code == requests.codes['ok']:
+        return response.json()
+    else:
+        printError(response.json()['status'])
+        return None
 
 def requestAllMasteryDataForSummoner(summonerId, APIKey):
     URL = "https://na1.api.riotgames.com/lol/champion-mastery/v4/champion-masteries/by-summoner/" + summonerId + "?api_key=" + APIKey
@@ -100,6 +107,10 @@ def getChampionByKey(search_key):
         if str(champ['key']) == str(search_key):
             return Champion(champ)
 
+def makeHistogram(valuesList):
+    fig, ax1 = plt.subplots()
+    ax1.hist(valuesList)
+
 def main():
     summonerName = "Cefiroth"
     # APIKey = "GAPI-ddf82131-cea0-4065-937f-6f976fcfc8bb"
@@ -110,19 +121,31 @@ def main():
         mySummoner = Summoner(summonerData)
         print(mySummoner.toString())
 
-    masteryData = requestMasteryDataForSingleChampionOfSummoner(mySummoner.id, 143, APIKey)
-    if masteryData != None:
-        myMasteryData = Mastery(masteryData) 
-        print(myMasteryData.toString())
+    # masteryData = requestMasteryDataForSingleChampionOfSummoner(mySummoner.id, 143, APIKey)
+    # if masteryData != None:
+    #     myMasteryData = Mastery(masteryData) 
+    #     print(myMasteryData.toString())
 
-    allMasteryData = requestAllMasteryDataForSummoner(mySummoner.id, APIKey)
-    if allMasteryData != None:
-        # for masteryInfo in allMasteryData:
-        #     m = Mastery(masteryInfo)
-        #     print(m.toString())
-        champKey = allMasteryData[0]['championId']
-        champ = getChampionByKey(champKey)
-        print(champ.toString())
+    # allMasteryData = requestAllMasteryDataForSummoner(mySummoner.id, APIKey)
+    # if allMasteryData != None:
+    #     # for masteryInfo in allMasteryData:
+    #     #     m = Mastery(masteryInfo)
+    #     #     print(m.toString())
+    #     champKey = allMasteryData[0]['championId']
+    #     champ = getChampionByKey(champKey)
+    #     print(champ.toString())
+
+    allMatchData = requestMatchData(mySummoner.accountId, APIKey)
+    if allMatchData != None:
+        myAllMatchData = MatchList(allMatchData) 
+        rolesList = myAllMatchData.getRolesList()
+        lanesList = myAllMatchData.getLanesList()
+        # print(myAllMatchData.toString())
+        plt.figure(0)
+        makeHistogram(rolesList)
+        plt.figure(1)
+        makeHistogram(lanesList)
+        plt.show()
 
     # matchData = requestMatchData(mySummoner.accountId, APIKey)
     # championOccurences = getCountChampionOccurencesInMatches(matchData)  

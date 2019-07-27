@@ -1,6 +1,7 @@
 class Champion:
     # LucidChart Visual: https://www.lucidchart.com/documents/edit/c418d0f7-0a48-4ca8-8608-b4bdfafad002/1?beaconFlowId=DED0DE9F7A7CD204
     
+    #TODO: Add attribute descriptions here
     # ---Attributes---
     # version:string
     # id:string
